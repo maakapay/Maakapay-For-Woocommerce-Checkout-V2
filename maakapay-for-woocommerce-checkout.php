@@ -12,10 +12,11 @@
 /*
  * Plugin Name: Maakapay Checkout For Woocommerce
  * Plugin URI:https://maakapay.com/plugins/maakapay-checkout-for-woocommerce-v2
- * Description:  Intergate <strong>Nabil Bank</strong> Payment Gateway to Woocommerce for directly accepting the card <strong>Debit/Credit</strong> from the checkout page.
+ * Description:  Maakapay: One Gateway, Endless Payment Possibilities.
  * Author: Maakapay
  * Author URI: https://maakapay.com
  * Version: 2.0.0
+ * Requires Plugins: woocommerce
  * 
  * Copyright: © 2009-2015 WooCommerce.
  * License: GNU General Public License v3.0

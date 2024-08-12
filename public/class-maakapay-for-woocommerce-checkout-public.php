@@ -76,7 +76,7 @@ class Maakapay_For_Woocommerce_Checkout_Payment_Page_Template_Handler {
                 $order = wc_get_order ( $result->invoice_number );
 
                 if( $maakapay_settings[ 'enable_log' ] == "yes" ) {
-                    wc_get_logger()->debug( 'Status: ' . $transaction_status , array( 'source' => 'Maakapay Logs' ) );
+                    wc_get_logger()->debug('Order ID: ' . $result->invoice_number . ' Status: ' . $transaction_status , array( 'source' => 'Maakapay Logs' ) );
                 }
 
                 switch ( $transaction_status ) {
@@ -102,10 +102,11 @@ class Maakapay_For_Woocommerce_Checkout_Payment_Page_Template_Handler {
                 }
             }
 
-        }
-
-        if( $maakapay_settings[ 'enable_log' ] == "yes" ) {
-            wc_get_logger()->debug( 'Hash and Validation Matched failed. Hash: ' .  $hash_value, array( 'source' => 'Maakapay Logs' ) );
+        } else {
+            if( $maakapay_settings[ 'enable_log' ] == "yes" ) {
+                wc_get_logger()->debug( 'Hash and Validation Matched failed. Hash: ' .  $hash_value, array( 'source' => 'Maakapay Logs' ) );
+            }
+            // Return 404 page 
         }
     }
 

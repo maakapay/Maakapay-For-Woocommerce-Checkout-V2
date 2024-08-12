@@ -8,7 +8,7 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 {
 	public function __construct() {
 		$this->id 					= "maakapay_for_woocommerce_checkout";
-		$this->icon 				= apply_filters('woocommerce_offline_icon', plugin_dir_url( __DIR__ ) . 'assets/images/payment-logo.jpeg');
+		$this->icon 				= apply_filters('woocommerce_offline_icon', plugin_dir_url( __DIR__ ) . 'assets/images/maakapay-logo.png');
 		$this->has_fields 			= true;
 		$this->method_title 		= "Maakapay";
 		$this->method_description 	= "Take payments using multiple payment gateway options from Woocommerce Using Maakapay Plugin";
@@ -41,7 +41,7 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 		          'title' 		=> __( 'Description', 'woocommerce' ),
 		          'type' 		=> 'textarea',
 		          'description' => __( 'This controls the description which the user sees during checkout.', 'woocommerce' ),
-		          'default' 	=> __("Enable 3D Secure™ in your card to make the purchase. The 3D Secure™ payment system is available through your bank under the name “Verified by Visa” for Visa cards or “Mastercard SecureCode” for Mastercards.", 'woocommerce')
+		          'default' 	=> __("Maakapay is a unified payment gateway supporting various systems. For Nabil and Nic Asia transactions, 3D Secure must be enabled to ensure security.", 'woocommerce')
 		    ),
 		    'testmode' => array(
 				'title'       => 'Test mode',
@@ -101,6 +101,18 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 		    //     'label' 	=> __( 'Enable Nic Quickpay in Maakapay For Checkout', 'woocommerce' ),
 		    //     'default'   => 'no'
 		    // ),
+			// 'enable_qr' => array(
+		    //     'title' 	=> __( 'Connect IPS Dyanmic Qr', 'woocommerce' ),
+		    //     'type' 		=> 'checkbox',
+		    //     'label' 	=> __( 'Enable ConnectIPS Dynamic QR in Maakapay For Checkout', 'woocommerce' ),
+		    //     'default'   => 'no'
+		    // ),
+			// 'enable_ws_qr' => array(
+		    //     'title' 	=> __( 'Connect IPS Dynmic Qr With Web Socket', 'woocommerce' ),
+		    //     'type' 		=> 'checkbox',
+		    //     'label' 	=> __( 'Enable ConnectIPS Dyamic QR with Realtime update in Maakapay For Checkout using Web Socket', 'woocommerce' ),
+		    //     'default'   => 'no'
+		    // ),
 			'enable_khalti' => array(
 		        'title' 	=> __( 'Khalti', 'woocommerce' ),
 		        'type' 		=> 'checkbox',
@@ -123,28 +135,31 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 		
 	    if ( $this->description )
             if( $this->get_option( 'testmode' ) == 'yes' ) {
-                $this->description .= ' <br><strong>Sandbox mode enabled</strong>';
+                $this->description .= ' <br><strong>TEST MODE IS ENABLED</strong>';
                 $this->description  = trim( $this->description );
             }
         echo wpautop( wptexturize( $this->description ) );
 
-		echo '<fieldset id="wc-' . esc_attr( $this->id ) . '-cc-form" class="wc-credit-card-form wc-payment-form" style="background:transparent;">';
+		echo '<fieldset id="wc-' . esc_attr( $this->id ) . '-cc-form" class="wc-credit-card-form wc-payment-form">';
  
 	// Add this action hook if you want your custom payment gateway to support it
 	do_action( 'woocommerce_credit_card_form_start', $this->id );
- 
+
 	$paymentOptions = "";
-	if( $this->get_option( 'enable_cips' ) == "yes" ) {
-		$paymentOptions .= '<div>
-			<input type="radio" id="CIPS" name="agent" value="CIPS" checked />
-			<label for="CIPS">ConnectIPS</label>
-		</div>';
-   	}
+
+	if( get_woocommerce_currency() === "NPR" ) {
+		if( $this->get_option( 'enable_cips' ) == "yes" ) {
+			$paymentOptions .= '<div>
+				<input type="radio" id="CIPS" name="agent" value="CIPS" />
+				<label for="CIPS" style="font-size: 15px; font-weight: bold">ConnectIPS</label>
+			</div>';
+		   }
+	}
 	if( $this->get_option( 'enable_nic' ) == "yes" ) {
 		 $paymentOptions .= '
 		 <div>
 			<input type="radio" id="NIC" name="agent" value="NIC" />
-			<label for="NIC">NIC Cybersource</label>
+			<label for="NIC" style="font-size: 15px; font-weight: bold">Card payment by NIC Cybersource</label>
 		</div>';
 	}
 	// if( $this->get_option( 'enable_quick_nic' ) == "yes" ) {
@@ -155,16 +170,19 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 	// 	   }
 	if( $this->get_option( 'enable_nabil' ) == "yes" ) {
 		$paymentOptions .= '<div>
-			<input type="radio" id="NABIL" name="agent" value="NABIL" />
-			<label for="NABIL">NABIL EPG</label>
+			<input type="radio" id="NABIL" name="agent" value="NABIL" checked />
+			<label for="NABIL" style="font-size: 15px; font-weight: bold">Card payment by Nabil EPG</label>
 		</div>';
    	}
+
+	if( get_woocommerce_currency() === "NPR" ) {
 	   if( $this->get_option( 'enable_khalti' ) == "yes" ) {
-		$paymentOptions .= '<div>
-			<input type="radio" id="KHALTI" name="agent" value="KHALTI" />
-			<label for="KHALTI">KHALTI</label>
-		</div>';
-   	}
+			$paymentOptions .= '<div>
+				<input type="radio" id="KHALTI" name="agent" value="KHALTI" />
+				<label for="KHALTI" style="font-size: 15px; font-weight: bold">KHALTI</label>
+			</div>';
+   		}
+	}
 	echo '
 		<fieldset>
 		  <legend>Select Payment Method:</legend>
@@ -211,8 +229,7 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
             $app_mode = ($this->get_option( 'testmode' ) == "no") ? "live" : "test";
 
 		    $name = sanitize_text_field( $order->get_billing_first_name() ). ' ' . sanitize_text_field( $order->get_billing_last_name() );
-		    $address = sanitize_text_field( $order->get_shipping_address_1() ) . ',' . sanitize_text_field( $order->get_shipping_city() ) . ',' . sanitize_text_field( $order->get_shipping_state() ) . ',' . sanitize_text_field( $order->get_shipping_postcode() ) . ',' . sanitize_text_field( $order->get_shipping_country() );
-            $invoice_id = $order->id;
+		    $invoice_id = $order->id;
             $amount = $order->get_total();
             $email = $order->get_billing_email();
             $phone = $order->get_billing_phone();
@@ -242,12 +259,12 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 			if( $this->get_option( 'testmode' ) == "no" ){
 
                 $token = $this->get_option( 'live_api_key' );
-                $api_url = 'https://apiapp.maakapay.com/v1/createOrder';
+                $api_url = 'https://api.maakapay.com/v2/request/payment/' . $agent;
 
             }else{
 
                 $token = $this->get_option( 'test_api_key' );
-                $api_url = 'http://maakapaybackend.loc/v2/request/payment/' . $agent ;
+                $api_url = 'https://devapi.maakapay.com/v2/request/payment/' . $agent;
 
             }
 
@@ -277,7 +294,7 @@ class Maakapay_For_Woocommerce_Checkout extends WC_Payment_Gateway
 				'orderNumber'	   => $invoice_id
 		    ];
 
-		    $response = wp_remote_post( esc_url_raw( $api_url ), array(
+		    $response = wp_safe_remote_post( esc_url_raw( $api_url ), array(
 
                 'body'    => $params,
                 'timeout' => 60,
